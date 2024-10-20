@@ -5,6 +5,7 @@ const { logger } = require("./utils/middleware/logger");
 
 const authRouter = require("./routers/auth");
 const userRouter = require("./routers/users");
+const postRouter = require("./routers/posts");
 
 const PORT = process.env.PORT || 3333;
 const app = express();
@@ -15,6 +16,7 @@ app.use(logger);
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/posts", postRouter);
 
 app.get("/", (req, res) => {
   res.json("Welcome to VG Journal");
