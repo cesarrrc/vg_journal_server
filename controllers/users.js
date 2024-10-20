@@ -1,4 +1,4 @@
-const connection = require("../utils/connection");
+const connection = require("../utils/sql/connection");
 const jwt = require("jsonwebtoken");
 
 const getProfile = (req, res) => {

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const checkJwt = require("./middleware/checkJwt");
-const { logger } = require("./middleware/logger");
+const checkJwt = require("./utils/middleware/checkJwt");
+const { logger } = require("./utils/middleware/logger");
 
 const authRouter = require("./routers/auth");
 const userRouter = require("./routers/users");

@@ -1,5 +1,5 @@
 const axios = require("axios");
-const connection = require("../utils/connection");
+const connection = require("../utils/sql/connection");
 const bcrypt = require("bcrypt");
 
 const signup = (req, res) => {
