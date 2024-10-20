@@ -1,13 +1,14 @@
-const { auth, requiredScopes } = require("express-oauth2-jwt-bearer");
+const jwt = require("jsonwebtoken");
 
-// Authorization middleware. When used, the Access Token must
-// exist and be verified against the Auth0 JSON Web Key Set.
-const checkJwt = auth({
-  audience: "express-app",
-  issuerBaseURL: `https://cesarrr.us.auth0.com/`,
-});
+const validateUser = (req, res, next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.JWT_SERVER_SECRET);
+  console.log(decoded);
+  req.user = decoded;
+  next();
+};
 
-module.exports = checkJwt;
+module.exports = validateUser;
 
 /* NOTES ON CLIENT ACCESS TOKENS AND ID TOKENS
 
