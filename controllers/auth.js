@@ -16,36 +16,39 @@ const signup = (req, res) => {
       password: password,
       connection: "Username-Password-Authentication",
       username: username,
-      grant_type: "client_credentials",
     },
   })
     .then(async (response) => {
       console.log(response);
-      const sql = `
-        INSERT INTO users
-        SET ?
-      `;
+      const sql = `INSERT INTO users SET ?`;
       const hash = await bcrypt.hash(password, 10);
-      const body = [
-        {
-          username,
-          password: hash,
-          email,
-          auth_id: response.data._id,
-        },
-      ];
-      connection.query(sql, body, (err, results) => {
+      const body = {
+        username,
+        email,
+        password: hash,
+        auth_id: response.data._id,
+      };
+
+      connection.query(sql, [body], (err, results) => {
         if (err) {
           console.log(err);
           return res.json(err);
         }
-        console.log(results);
         return res.json("signed up");
       });
     })
     .catch((e) => {
-      console.log(e);
-      res.json(e);
+      console.log(e.response, "catch block **********");
+      if (e.response.status === 400) {
+        return res.status(e.response.status).json({
+          status: e.response.status,
+          message: "Something went wrong",
+        });
+      }
+      res.status(e.response.status).json({
+        status: e.response.status,
+        message: e.response.data.error,
+      });
     });
 };
 
@@ -62,21 +65,21 @@ const login = (req, res) => {
       username: username,
       password: password,
       audience: process.env.AUTH0_IDENTITY,
-      connection: "Username-Password-Authentication",
       client_id: process.env.AUTH0_CLIENT_ID,
       client_secret: process.env.AUTH0_CLIENT_SECRET,
     },
   })
     .then((response) => {
-      console.log(response);
+      console.log(response, "response");
       const { access_token } = response.data;
-      res.json({
-        access_token,
-      });
+      res.json({ access_token });
     })
     .catch((e) => {
-      console.log(e);
-      res.send(e);
+      console.log(e.response);
+      res.status(e.response.status).json({
+        status: e.response.status,
+        message: e.response.data.error_description,
+      });
     });
 };
 
