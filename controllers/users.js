@@ -27,4 +27,31 @@ const getProfile = (req, res) => {
   });
 };
 
-module.exports = { getProfile };
+const revalidateUser = (req, res) => {
+  console.log(req.user);
+  const { id } = req.user;
+  const sql = `
+    SELECT id, auth_id, username, email FROM users
+    WHERE id = ?;  
+  `;
+  connection.query(sql, [id], (err, rows) => {
+    if (err) {
+      console.log(err);
+      res.json(err);
+    }
+    console.log(rows, id);
+    if (!rows[0]) {
+      return res.status(404).json({
+        ok: false,
+        message: "No user found with that id.",
+      });
+    }
+    const token = jwt.sign({ ...rows[0] }, process.env.JWT_SERVER_SECRET);
+    res.json({
+      ...rows[0],
+      token,
+    });
+  });
+};
+
+module.exports = { getProfile, revalidateUser };
