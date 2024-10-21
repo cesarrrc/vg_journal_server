@@ -2,9 +2,11 @@ const connection = require("../utils/sql/connection");
 
 const getAllPosts = (req, res) => {
   const sql = `
-    SELECT p.id, p.user_id, u.username as author, p.title, p.description, p.create_time, p.update_time FROM vg_journal.posts p
+    SELECT p.id, p.user_id, u.username as author, p.title, p.description, p.create_time, p.update_time 
+    FROM vg_journal.posts p
     JOIN users u
-    WHERE u.id = p.user_id;
+    WHERE u.id = p.user_id
+    ORDER BY p.id DESC;
   `;
   connection.query(sql, (err, rows) => {
     if (err) {
