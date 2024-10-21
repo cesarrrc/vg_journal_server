@@ -77,7 +77,7 @@ const createPost = (req, res) => {
       data: {
         id: results.insertId,
         user_id: id,
-        created_at: new Date(),
+        create_time: new Date(),
         ...req.body,
       },
     });
