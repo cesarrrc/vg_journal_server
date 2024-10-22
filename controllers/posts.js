@@ -44,6 +44,29 @@ const getPostsByUserId = (req, res) => {
   const { user_id } = req.params;
   const sql = "SELECT * FROM posts WHERE user_id = ?;";
   connection.query(sql, [user_id], (err, rows) => {
+    console.log(rows);
+    if (err) {
+      console.log(err);
+      return res.json(err);
+    }
+    if (rows.length === 0) {
+      return res.status(200).json({
+        status: 200,
+        message: "There are no Posts for this User",
+      });
+    }
+    res.json({
+      results: rows.length,
+      data: rows,
+    });
+  });
+};
+
+const getUserPosts = (req, res) => {
+  const { id } = req.user;
+  const sql = "SELECT * FROM posts WHERE user_id = ?;";
+  connection.query(sql, [id], (err, rows) => {
+    console.log(rows);
     if (err) {
       console.log(err);
       return res.json(err);
@@ -147,4 +170,5 @@ module.exports = {
   createPost,
   editPost,
   deletePost,
+  getUserPosts,
 };
