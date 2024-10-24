@@ -2,7 +2,7 @@ const axios = require("axios");
 const connection = require("../utils/sql/connection");
 const bcrypt = require("bcrypt");
 
-const signup = (req, res) => {
+const signup = (req, res, next) => {
   const { username, password, email } = req.body;
 
   axios(`https://${process.env.AUTH0_DOMAIN}/dbconnections/signup`, {
@@ -34,7 +34,7 @@ const signup = (req, res) => {
           console.log(err);
           return res.json(err);
         }
-        return res.json("signed up");
+        next();
       });
     })
     .catch((e) => {
