@@ -3,11 +3,13 @@ const connection = require("../utils/sql/connection");
 const getAllPosts = (req, res) => {
   const sql = `
     SELECT 
-      p.id, p.user_id, 
+      p.id, 
+      p.user_id, 
       u.username as author, 
       p.title, 
       p.description, 
       GROUP_CONCAT(vgc.category) AS categories, 
+      COUNT(pl.user_id) as likes,
       p.create_time, 
       p.update_time 
     FROM vg_journal.posts p
@@ -17,7 +19,9 @@ const getAllPosts = (req, res) => {
         ON pc.category_id = vgc.id 
       LEFT JOIN users u
         ON u.id = p.user_id
-      GROUP BY p.id
+      LEFT JOIN post_likes pl
+        ON pl.post_id = p.id
+    GROUP BY p.id
     ORDER BY p.id DESC;
   `;
   connection.query(sql, (err, rows) => {
@@ -88,11 +92,13 @@ const getUserPosts = (req, res) => {
   const { id } = req.user;
   const sql = `
     SELECT 
-      p.id, p.user_id, 
+      p.id, 
+      p.user_id, 
       u.username as author, 
       p.title, 
       p.description, 
       GROUP_CONCAT(vgc.category) AS categories, 
+      COUNT(pl.user_id) as likes,
       p.create_time, 
       p.update_time 
     FROM vg_journal.posts p
@@ -102,9 +108,12 @@ const getUserPosts = (req, res) => {
         ON pc.category_id = vgc.id 
       LEFT JOIN users u
         ON u.id = p.user_id
-        WHERE u.id = ?
-      GROUP BY p.id
+      LEFT JOIN post_likes pl
+        ON pl.post_id = p.id
+    WHERE u.id = ?
+    GROUP BY p.id
     ORDER BY p.id DESC;
+     
 `;
   connection.query(sql, [id], (err, rows) => {
     console.log(rows);
