@@ -9,7 +9,7 @@ const getAllPosts = (req, res) => {
       p.title, 
       p.description, 
       GROUP_CONCAT(vgc.category) AS categories, 
-      COUNT(pl.user_id) as likes,
+      COUNT(pl.user_id) as total_likes,
       p.create_time, 
       p.update_time 
     FROM vg_journal.posts p
@@ -98,7 +98,7 @@ const getUserPosts = (req, res) => {
       p.title, 
       p.description, 
       GROUP_CONCAT(vgc.category) AS categories, 
-      COUNT(pl.user_id) as likes,
+      COUNT(pl.user_id) as total_likes,
       p.create_time, 
       p.update_time 
     FROM vg_journal.posts p
