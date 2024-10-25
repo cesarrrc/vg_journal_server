@@ -2,10 +2,22 @@ const connection = require("../utils/sql/connection");
 
 const getAllPosts = (req, res) => {
   const sql = `
-    SELECT p.id, p.user_id, u.username as author, p.title, p.description, p.create_time, p.update_time 
+    SELECT 
+      p.id, p.user_id, 
+      u.username as author, 
+      p.title, 
+      p.description, 
+      GROUP_CONCAT(vgc.category) AS categories, 
+      p.create_time, 
+      p.update_time 
     FROM vg_journal.posts p
-    JOIN users u
-    WHERE u.id = p.user_id
+      LEFT JOIN post_categories pc 
+        ON pc.post_id = p.id
+      LEFT JOIN video_game_categories vgc
+        ON pc.category_id = vgc.id 
+      LEFT JOIN users u
+        ON u.id = p.user_id
+      GROUP BY p.id
     ORDER BY p.id DESC;
   `;
   connection.query(sql, (err, rows) => {
@@ -13,6 +25,16 @@ const getAllPosts = (req, res) => {
       console.log(err);
       return res.json(err);
     }
+    rows.forEach((row) => {
+      if (row.categories) {
+        const categories = [];
+        row.categories.split(",").forEach((category) => {
+          categories.push(category);
+        });
+        row.categories = categories;
+      }
+      return row;
+    });
     res.json({
       results: rows.length,
       data: rows,
@@ -64,13 +86,25 @@ const getPostsByUserId = (req, res) => {
 
 const getUserPosts = (req, res) => {
   const { id } = req.user;
-  const sql =  `
-  SELECT p.id, p.user_id, u.username as author, p.title, p.description, p.create_time, p.update_time 
-  FROM vg_journal.posts p
-  JOIN users u
-  WHERE u.id = p.user_id
-  AND p.user_id = ?
-  ORDER BY p.id DESC;
+  const sql = `
+    SELECT 
+      p.id, p.user_id, 
+      u.username as author, 
+      p.title, 
+      p.description, 
+      GROUP_CONCAT(vgc.category) AS categories, 
+      p.create_time, 
+      p.update_time 
+    FROM vg_journal.posts p
+      LEFT JOIN post_categories pc 
+        ON pc.post_id = p.id
+      LEFT JOIN video_game_categories vgc
+        ON pc.category_id = vgc.id 
+      LEFT JOIN users u
+        ON u.id = p.user_id
+        WHERE u.id = ?
+      GROUP BY p.id
+    ORDER BY p.id DESC;
 `;
   connection.query(sql, [id], (err, rows) => {
     console.log(rows);
@@ -84,6 +118,16 @@ const getUserPosts = (req, res) => {
         message: "There are no Posts for this User",
       });
     }
+    rows.forEach((row) => {
+      if (row.categories) {
+        const categories = [];
+        row.categories.split(",").forEach((category) => {
+          categories.push(category);
+        });
+        row.categories = categories;
+      }
+      return row;
+    });
     res.json({
       results: rows.length,
       data: rows,
