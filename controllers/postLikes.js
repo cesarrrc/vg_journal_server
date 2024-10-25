@@ -5,7 +5,7 @@ const getAllLikes = (req, res) => {
   const sql = "SELECT * FROM post_likes";
   connection.query(sql, (err, rows) => {
     if (err) {
-      console.log(error);
+      console.log(err);
       res.json(err);
     }
     res.json(rows);
@@ -13,10 +13,15 @@ const getAllLikes = (req, res) => {
 };
 
 const getPostLikes = (req, res) => {
-  const sql = "SELECT * FROM post_likes WHERE post_id = ?";
+  const sql = `
+    SELECT pl.id, post_id, user_id, username FROM post_likes pl
+    JOIN users u
+    ON u.id = pl.user_id
+    WHERE post_id = ? 
+  `;
   connection.query(sql, [req.params.post_id], (err, rows) => {
     if (err) {
-      console.log(error);
+      console.log(err);
       res.json(err);
     }
     res.json(rows);
@@ -27,7 +32,7 @@ const getUserLikes = (req, res) => {
   const sql = "SELECT * FROM post_likes WHERE user_id = ?";
   connection.query(sql, [req.params.user_id], (err, rows) => {
     if (err) {
-      console.log(error);
+      console.log(err);
       res.json(err);
     }
     res.json(rows);
