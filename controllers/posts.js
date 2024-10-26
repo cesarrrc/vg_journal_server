@@ -36,7 +36,17 @@ const getAllPosts = (req, res) => {
         row.categories.split(",").forEach((category) => {
           categories.push(category);
         });
-        row.categories = categories;
+      } else {
+        row.categories = [];
+      }
+      if (row.all_likes) {
+        const likes = [];
+        row.all_likes.split(",").forEach((like) => {
+          likes.push(like);
+        });
+        row.all_likes = likes;
+      } else {
+        row.all_likes = [];
       }
       return row;
     });
@@ -71,7 +81,6 @@ const getPostsByUserId = (req, res) => {
   const { user_id } = req.params;
   const sql = "SELECT * FROM posts WHERE user_id = ?;";
   connection.query(sql, [user_id], (err, rows) => {
-    console.log(rows);
     if (err) {
       console.log(err);
       return res.json(err);
