@@ -147,6 +147,15 @@ const getUserPosts = (req, res) => {
         });
         row.categories = categories;
       }
+      if (row.all_likes) {
+        const likes = [];
+        row.all_likes.split(",").forEach((like) => {
+          likes.push(like);
+        });
+        row.all_likes = likes;
+      } else {
+        row.all_likes = [];
+      }
       return row;
     });
     res.json({
