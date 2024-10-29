@@ -6,6 +6,7 @@ class Connection {
     if (!this.pool) {
       console.log("creating connection pool...");
       this.pool = mysql.createPool({
+        multipleStatements: true,
         connectionLimit: 100,
         host: process.env.HOST_NAME,
         user: process.env.DATABASE_USER,
