@@ -3,7 +3,7 @@ const connection = require("../utils/sql/connection");
 
 const getAllPostComments = (req, res) => {
   const sql = `
-    SELECT post_id, user_id, u.username, uc.comment, uc.create_time, uc.update_time
+    SELECT pc.id, post_id, user_id, u.username, uc.comment, uc.create_time, uc.update_time
     FROM post_comments pc
     LEFT JOIN user_comments uc
         ON uc.id = pc.comment_id
@@ -21,7 +21,7 @@ const getAllPostComments = (req, res) => {
 
 const getAllCommentsForAPost = (req, res) => {
   const sql = `
-    SELECT post_id, user_id, u.username, uc.comment, uc.create_time, uc.update_time
+    SELECT pc.id, post_id, user_id, u.username, uc.comment, uc.create_time, uc.update_time
     FROM post_comments pc
     LEFT JOIN user_comments uc
         ON uc.id = pc.comment_id
