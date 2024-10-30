@@ -21,7 +21,7 @@ const getAllPostComments = (req, res) => {
 
 const getAllCommentsForAPost = (req, res) => {
   const sql = `
-    SELECT pc.id, post_id, user_id, u.username, uc.comment, uc.create_time, uc.update_time
+    SELECT pc.id as post_comment_id, uc.id as user_comment_id, post_id, user_id, u.username, uc.comment, uc.create_time, uc.update_time
     FROM post_comments pc
     LEFT JOIN user_comments uc
         ON uc.id = pc.comment_id
@@ -41,7 +41,7 @@ const getAllCommentsForAPost = (req, res) => {
 const addPostComment = (req, res) => {
   console.log(req.body);
   const { post_id } = req.params;
-  const { id: user_id } = req.user;
+  const { id: user_id, username } = req.user;
   const { comment } = req.body;
   const sql = `
     INSERT INTO user_comments (user_id, comment) VALUES (?, ?); 
@@ -64,10 +64,15 @@ const addPostComment = (req, res) => {
     res.status(201).json({
       message: "You added a comment to a post.",
       status: 201,
-      comment_id: results[0].insertId,
-      post_comment_id: results[1].insertId,
-      post_id: Number(post_id),
-      comment,
+      data: {
+        user_comment_id: results[0].insertId,
+        post_comment_id: results[1].insertId,
+        post_id: Number(post_id),
+        user_id: Number(user_id),
+        username,
+        comment,
+        create_time: new Date(),
+      },
     });
   });
 };
