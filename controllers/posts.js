@@ -1,6 +1,9 @@
 const connection = require("../utils/sql/connection");
 
 const getAllPosts = (req, res) => {
+  const { page } = req.params;
+  const offset = 10 * (page - 1);
+  console.log(offset);
   const sql = `
     SELECT 
       p.id, 
@@ -23,9 +26,11 @@ const getAllPosts = (req, res) => {
       LEFT JOIN post_likes pl
         ON pl.post_id = p.id
     GROUP BY p.id
-    ORDER BY p.id DESC;
+    ORDER BY p.id DESC
+    LIMIT 10
+    OFFSET ?;
   `;
-  connection.query(sql, (err, rows) => {
+  connection.query(sql, [offset], (err, rows) => {
     if (err) {
       console.log(err);
       return res.json(err);
@@ -52,6 +57,7 @@ const getAllPosts = (req, res) => {
     });
     res.json({
       results: rows.length,
+      page: Number(page),
       data: rows,
     });
   });

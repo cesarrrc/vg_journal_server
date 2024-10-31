@@ -5,7 +5,7 @@ const validateUser = require("../utils/middleware/validateUser");
 
 const router = express.Router();
 
-router.get("/get-posts", postsController.getAllPosts);
+router.get("/get-all-posts/:page", postsController.getAllPosts);
 router.get("/get-post/:post_id", postsController.getPostById);
 router.get("/get-posts/:user_id", postsController.getPostsByUserId);
 
